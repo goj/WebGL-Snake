@@ -134,24 +134,24 @@
 
     function drawSnake() {
         var spine = [
-            0.0, 0.0,
-            1.0, 0.12,
-            2.0, 0.25,
-            3.0, 0.3,
-            4.0, 0.25,
-            5.0, 0.12,
-            6.0, 0.0,
+            [0.0, 0.0],
+            [1.0, 0.12],
+            [2.0, 0.25],
+            [3.0, 0.3],
+            [4.0, 0.25],
+            [5.0, 0.12],
+            [6.0, 0.0],
         ];
-        var contour = new Array(2*(spine.length-2));
+        var contour = new Array(2*(spine.length-1)+1);
         var curX, curY, prevX, prevY, dirX, dirY;
         var j=0;
         var w=1.0; // snake's width
 
-        prevX = spine[0];
-        prevY = spine[1];
-        for (var i=2; i < spine.length; i+=2) {
-            curX = spine[i];
-            curY = spine[i+1];
+        prevX = contour[j++] = spine[0][0];
+        prevY = contour[j++] = spine[0][1];
+        for (var i=1; i < spine.length; i+=1) {
+            curX = spine[i][0];
+            curY = spine[i][1];
             dirX = curX - prevX;
             dirY = curY - prevY;
             var dirLen = Math.sqrt(dirX*dirX + dirY*dirY);
