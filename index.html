@@ -115,58 +115,72 @@
 
 
 
-    var triangleVertexPositionBuffer;
-    var squareVertexPositionBuffer;
+    var snakeVertexPositionBuffer;
 
     function initBuffers() {
-        triangleVertexPositionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-        var vertices = [
-             0.0,  1.0,  0.0,
-            -1.0, -1.0,  0.0,
-             1.0, -1.0,  0.0
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-        triangleVertexPositionBuffer.itemSize = 3;
-        triangleVertexPositionBuffer.numItems = 3;
-
-        squareVertexPositionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
-        vertices = [
-             1.0,  1.0,  0.0,
-            -1.0,  1.0,  0.0,
-             1.0, -1.0,  0.0,
-            -1.0, -1.0,  0.0
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-        squareVertexPositionBuffer.itemSize = 3;
-        squareVertexPositionBuffer.numItems = 4;
+        snakeVertexPositionBuffer = gl.createBuffer();
     }
 
 
-    function drawScene() {
+    function clearScene() {
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 
         mat4.identity(mvMatrix);
-
-        mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
-        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        setMatrixUniforms();
-        gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
-
-
-        mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
-        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        setMatrixUniforms();
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
+        mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
     }
 
+    function drawSnake() {
+        var spine = [
+            0.0, 0.0,
+            1.0, 0.12,
+            2.0, 0.25,
+            3.0, 0.3,
+            4.0, 0.25,
+            5.0, 0.12,
+            6.0, 0.0,
+        ];
+        var contour = new Array(2*(spine.length-2));
+        var curX, curY, prevX, prevY, dirX, dirY;
+        var j=0;
+        var w=1.0; // snake's width
 
+        prevX = spine[0];
+        prevY = spine[1];
+        for (var i=2; i < spine.length; i+=2) {
+            curX = spine[i];
+            curY = spine[i+1];
+            dirX = curX - prevX;
+            dirY = curY - prevY;
+            var dirLen = Math.sqrt(dirX*dirX + dirY*dirY);
+            dirX /= dirLen;
+            dirY /= dirLen;
+
+            contour[j++] = curX - dirY * w;
+            contour[j++] = curY + dirX * w;
+            contour[j++] = curX + dirY * w;
+            contour[j++] = curY - dirX * w;
+
+            prevX = curX;
+            prevY = curY;
+        };
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, snakeVertexPositionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(contour), gl.STATIC_DRAW);
+        snakeVertexPositionBuffer.itemSize = 2;
+        snakeVertexPositionBuffer.numItems = contour.length / 2;
+
+        mat4.scale(mvMatrix, [0.5, 0.5, 1.0]);
+        mat4.translate(mvMatrix, [-3.0, 0.0, 0.0]);
+        gl.bindBuffer(gl.ARRAY_BUFFER, snakeVertexPositionBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute,
+                               snakeVertexPositionBuffer.itemSize,
+                               gl.FLOAT, false, 0, 0);
+        setMatrixUniforms();
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, snakeVertexPositionBuffer.numItems);
+    }
 
     function webGLStart() {
         var canvas = document.getElementById("lesson01-canvas");
@@ -177,7 +191,8 @@
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
 
-        drawScene();
+        clearScene();
+        drawSnake();
     }
 
 
