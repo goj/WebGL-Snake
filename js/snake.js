@@ -8,6 +8,7 @@ function Snake(world) {
     this.contour = [];
     this.spine = new Array(INITIAL_SPINE_LEN);
     this.v = 2.5; // velocity
+    this.agility = 3;
     var x=0, y=0, px=x, py=y;
     for (var i=0; i < INITIAL_SPINE_LEN; i++) {
         px = x; py = y;
@@ -22,6 +23,8 @@ function Snake(world) {
 }
 
 Snake.prototype = {
+    turnLeft:  function() { this.dir += this.agility * dt; },
+    turnRight: function() { this.dir -= this.agility * dt; },
     move: function() {
         this.headX += Math.cos(this.dir) * this.v * dt;
         this.headY += Math.sin(this.dir) * this.v * dt;
