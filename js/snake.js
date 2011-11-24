@@ -1,23 +1,33 @@
-var INITIAL_SPINE_LEN = 400;
-var RIB_DIST = 25;
+var INITIAL_SPINE_LEN = 200;
+var RIB_DIST = 10;
 var SNAKE_WIDTH = 0.25;
+var dt = 0.01;
 
-function Snake() {
+function Snake(world) {
     this.vertPosBuf = gl.createBuffer();
+    this.contour = [];
     this.spine = new Array(INITIAL_SPINE_LEN);
-    var px = 0, py = 0;
+    this.v = 2.5; // velocity
+    var x=0, y=0, px=x, py=y;
     for (var i=0; i < INITIAL_SPINE_LEN; i++) {
         px = x; py = y;
-        var x = 0.02 * i;
-        var y = 0.2 * Math.sin(0.024 * i);
+        this.dir = Math.sin(0.01 * i);
+        x += Math.cos(this.dir) * this.v * dt;
+        y += Math.sin(this.dir) * this.v * dt;
         this.spine[i] = [x, y];
     };
     this.headX = x;
     this.headY = y;
-    this.contour = [];
+    this.dir = Math.atan2(y-py, x-px);
 }
 
 Snake.prototype = {
+    move: function() {
+        this.headX += Math.cos(this.dir) * this.v * dt;
+        this.headY += Math.sin(this.dir) * this.v * dt;
+        this.spine.shift();
+        this.spine.push([this.headX, this.headY]);
+    },
     draw: function() {
         var ribsNo = Math.floor(this.spine.length / RIB_DIST);
         var tailContourLength = 4*ribsNo-2;

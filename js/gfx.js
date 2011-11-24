@@ -90,15 +90,12 @@ function clearScene() {
 }
 
 function webGLStart() {
-    var canvas = document.getElementById("lesson01-canvas");
+    var canvas = document.getElementById("game-canvas");
     initGL(canvas);
     initShaders();
-
-    var snake = new Snake();
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
 
     clearScene();
-    snake.draw();
 }
