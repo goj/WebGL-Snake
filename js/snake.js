@@ -13,10 +13,10 @@ function Snake(world) {
     this.spine = new Array(INITIAL_SPINE_LEN);
     this.v = 2.5; // velocity
     this.agility = 3;
-    var x=0, y=0, px=x, py=y;
+    var x=-3.0, y=0, px=x, py=y;
     for (var i=0; i < INITIAL_SPINE_LEN; i++) {
         px = x; py = y;
-        this.dir = Math.sin(0.01 * i);
+        this.dir = Math.sin(0.03 * i);
         x += Math.cos(this.dir) * this.v * dt;
         y += Math.sin(this.dir) * this.v * dt;
         this.spine[i] = [x, y];
@@ -91,7 +91,6 @@ Snake.prototype = {
         gl.uniform1i(shaderProgram.samplerUniform, 0);
 
         mat4.scale(mvMatrix, [0.5, 0.5, 1.0]);
-        mat4.translate(mvMatrix, [-3.0, 0.0, 0.0]);
         setMatrixUniforms();
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertIdxBuf);
