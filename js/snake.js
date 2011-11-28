@@ -3,6 +3,8 @@ var RIB_DIST = 10;
 var SNAKE_WIDTH = 0.25;
 var dt = 0.01;
 
+HEAD_SHAPE = [1, 1.1, 1.3, 1.25, 1.14, 1.12, 1.1, 0.8, 0.67, 0.4];
+
 function Snake(world) {
     this.vertPosBuf = gl.createBuffer();
     this.texCoordBuf = gl.createBuffer();
@@ -35,17 +37,15 @@ Snake.prototype = {
         this.spine.shift();
         this.spine.push([this.headX, this.headY]);
     },
-    appendRib: function(i, prevX, prevY, currX, currY) {
-        var v = i / this.spine.length * RIB_DIST * 2;
+    appendRib: function(i, prevX, prevY, currX, currY, width) {
+        width *= SNAKE_WIDTH;
         var j = i, n = i / 2;
         var dirX = currX - prevX;
         var dirY = currY - prevY;
         var dirLen = Math.sqrt(dirX*dirX + dirY*dirY);
         dirX /= dirLen;
         dirY /= dirLen;
-        var width = SNAKE_WIDTH;
-        if (i < 15)
-            width *= Math.sin(0.1 * i);
+        var v = i / this.spine.length * RIB_DIST * dirLen * 10;
         this.indices[n] = n;
         this.indices[n + 1] = n + 1;
         this.contour[i++] = currX - dirY * width;
@@ -60,19 +60,27 @@ Snake.prototype = {
     },
     draw: function() {
         var ribsNo = Math.floor(this.spine.length / RIB_DIST);
-        var tailContourLength = 4*ribsNo;
         var currX, currY, prevX, prevY;
 
         var i = this.appendRib(0, 2*this.spine[0][0] - this.spine[1][0],
                                   2*this.spine[0][1] - this.spine[1][1],
-                                  prevX = this.spine[0][0],
-                                  prevY = this.spine[0][1]);
+                                  currX = this.spine[0][0],
+                                  currY = this.spine[0][1],
+                                  0);
 
         for (var r=RIB_DIST; r < this.spine.length; r += RIB_DIST) {
+            prevX = currX; prevY = currY;
             i = this.appendRib(i, prevX, prevY,
                                   currX = this.spine[r][0],
-                                  currY = this.spine[r][1]);
+                                  currY = this.spine[r][1],
+                                  i < 15 ? Math.sin(0.1 * i) : 1);
+        };
+        var dx = Math.cos(this.dir) * this.v / HEAD_SHAPE.length / 3;
+        var dy = Math.sin(this.dir) * this.v / HEAD_SHAPE.length / 3;
+        for (var h=0; h < HEAD_SHAPE.length; h++) {
+            i = this.appendRib(i, prevX, prevY, currX, currY, HEAD_SHAPE[h]);
             prevX = currX; prevY = currY;
+            currX += dx; currY += dy;
         };
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertIdxBuf);
@@ -94,6 +102,6 @@ Snake.prototype = {
         setMatrixUniforms();
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertIdxBuf);
-        gl.drawElements(gl.TRIANGLE_STRIP, tailContourLength / 2, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLE_STRIP, i / 2, gl.UNSIGNED_SHORT, 0);
     }
 }
