@@ -67,8 +67,12 @@ function initShaders() {
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
+    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
 }
 
 var mvMatrix = mat4.create();
@@ -89,10 +93,32 @@ function clearScene() {
     mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
 }
 
+var SNAKE_TEXTURE;
+
+function initTextures() {
+    SNAKE_TEXTURE = gl.createTexture();
+    SNAKE_TEXTURE.image = new Image();
+    SNAKE_TEXTURE.image.onload = function() {
+        handleLoadedTexture(SNAKE_TEXTURE);
+    };
+    SNAKE_TEXTURE.image.crossOrigin = "anonymous";
+    SNAKE_TEXTURE.image.src = "img/snake.png";
+}
+
+function handleLoadedTexture(texture) {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
 function webGLStart() {
     var canvas = document.getElementById("game-canvas");
     initGL(canvas);
     initShaders();
+    initTextures();
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
