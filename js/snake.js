@@ -24,6 +24,7 @@ function Snake(world) {
     this.headX = x;
     this.headY = y;
     this.dir = Math.atan2(y-py, x-px);
+    this.dist = 0;
 }
 
 Snake.prototype = {
@@ -31,9 +32,11 @@ Snake.prototype = {
     agility: 3,
     turnLeft:  function() { this.dir += this.agility * dt; },
     turnRight: function() { this.dir -= this.agility * dt; },
+    getDir: function() {return this.dir + 0.5 * Math.sin(3*this.dist);},
     move: function() {
-        this.headX += Math.cos(this.dir) * this.v * dt;
-        this.headY += Math.sin(this.dir) * this.v * dt;
+        this.headX += Math.cos(this.getDir()) * this.v * dt;
+        this.headY += Math.sin(this.getDir()) * this.v * dt;
+        this.dist += this.v * dt;
         this.spine.shift();
         this.spine.push([this.headX, this.headY]);
     },
@@ -78,8 +81,8 @@ Snake.prototype = {
                              currY = this.spine[r][1],
                              i < 15 ? Math.sin(0.1 * i) : 1);
         };
-        var dx = Math.cos(this.dir) * this.v / HEAD_SHAPE.length / 3;
-        var dy = Math.sin(this.dir) * this.v / HEAD_SHAPE.length / 3;
+        var dx = Math.cos(this.getDir()) * this.v / HEAD_SHAPE.length / 3;
+        var dy = Math.sin(this.getDir()) * this.v / HEAD_SHAPE.length / 3;
         for (var h=0; h < HEAD_SHAPE.length; h++) {
             prevX = currX; prevY = currY;
             currX += dx; currY += dy;
