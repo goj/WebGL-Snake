@@ -1,6 +1,6 @@
 A simple game of snake implemented in WebGL.
 
-Use left and right arrow keys to turn the snake.
+Use left and right arrow keys to turn the snake. Press 'P' for pause.
 
 Some of the code is shameless ripoff of [Giles Thomas'es Learning WebGL tutorial](learningwebgl.com)
 

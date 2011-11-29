@@ -1,5 +1,6 @@
 var KEY_LEFT = false;
 var KEY_RIGHT = false;
+var PAUSE = false;
 
 var UPS = 60 / 1000; // do 40 updates per second
 var snake;
@@ -13,11 +14,13 @@ function startGame() {
 }
 
 function updateGame() {
-    if (KEY_LEFT && !KEY_RIGHT)
-        snake.turnLeft();
-    if (KEY_RIGHT && !KEY_LEFT)
-        snake.turnRight();
-    snake.move();
+    if (!PAUSE) {
+        if (KEY_LEFT && !KEY_RIGHT)
+            snake.turnLeft();
+        if (KEY_RIGHT && !KEY_LEFT)
+            snake.turnRight();
+        snake.move();
+    }
     lastFrame = Date.now();
 }
 
@@ -41,6 +44,7 @@ function addKeyListeners() {
         switch (e.keyCode) {
             case 37: KEY_LEFT  = true; break;
             case 39: KEY_RIGHT = true; break;
+            case 80: PAUSE = !PAUSE; break;
         }
     });
 
