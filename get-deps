@@ -1,5 +1,5 @@
 #!/bin/bash
 (cd js;
- wget https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
+ wget --no-check-certificate https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
 )
 git submodule update --init

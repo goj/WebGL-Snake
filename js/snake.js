@@ -3,7 +3,7 @@ var RIB_DIST = 10;
 var SNAKE_WIDTH = 0.25;
 var dt = 0.01;
 
-HEAD_SHAPE = [1, 1.1, 1.3, 1.25, 1.14, 1.12, 1.1, 0.8, 0.67, 0.4];
+var HEAD_SHAPE = [1, 1.1, 1.3, 1.25, 1.14, 1.12, 1.1, 0.8, 0.67, 0.4];
 
 function Snake(world) {
     this.vertPosBuf = gl.createBuffer();
@@ -78,9 +78,9 @@ Snake.prototype = {
         var dx = Math.cos(this.dir) * this.v / HEAD_SHAPE.length / 3;
         var dy = Math.sin(this.dir) * this.v / HEAD_SHAPE.length / 3;
         for (var h=0; h < HEAD_SHAPE.length; h++) {
-            i = this.appendRib(i, prevX, prevY, currX, currY, HEAD_SHAPE[h]);
             prevX = currX; prevY = currY;
             currX += dx; currY += dy;
+            i = this.appendRib(i, prevX, prevY, currX, currY, HEAD_SHAPE[h]);
         };
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertIdxBuf);
