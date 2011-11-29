@@ -27,7 +27,11 @@ function tick() {
     while (steps-- > 0) {
         updateGame();
     }
+
     clearScene();
+    mat4.scale(mvMatrix, [0.5, 0.5, 1.0]);
+    setMatrixUniforms();
+
     snake.draw();
     requestAnimFrame(tick);
 }
