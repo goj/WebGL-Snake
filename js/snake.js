@@ -44,7 +44,7 @@ Snake.prototype = {
          var dirY = currY - prevY;
          var dirLen = Math.sqrt(dirX*dirX + dirY*dirY);
          dirX /= dirLen; dirY /= dirLen;
-         var v = i / this.spine.length * RIB_DIST * dirLen * 10;
+         var v = 0.5 * i * dirLen;
          this.indices[n] = n;
          this.indices[n + 1] = n + 1;
          this.contour[i++] = currX - dirY * width;
