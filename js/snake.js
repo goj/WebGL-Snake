@@ -74,8 +74,8 @@ Snake.prototype = {
             this.spine[i][1] += deltaY;
         }
         for (var i=1; i < this.replicas.length; i++) {
-            this.replicas[i].deltaX += deltaX;
-            this.replicas[i].deltaY += deltaY;
+            this.replicas[i].deltaX -= deltaX;
+            this.replicas[i].deltaY -= deltaY;
         }
         this.replicas.push({age: 0,
                             deltaX: -deltaX,
