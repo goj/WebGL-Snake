@@ -18,30 +18,8 @@ function initGL(canvas) {
     }
 }
 
-function getShader(gl, id) {
-    var shaderScript = document.getElementById(id);
-    if (!shaderScript) {
-        return null;
-    }
-
-    var str = "";
-    var k = shaderScript.firstChild;
-    while (k) {
-        if (k.nodeType == 3) {
-            str += k.textContent;
-        }
-        k = k.nextSibling;
-    }
-
-    var shader;
-    if (shaderScript.type == "x-shader/x-fragment") {
-        shader = gl.createShader(gl.FRAGMENT_SHADER);
-    } else if (shaderScript.type == "x-shader/x-vertex") {
-        shader = gl.createShader(gl.VERTEX_SHADER);
-    } else {
-        return null;
-    }
-
+function compileShader(str, type) {
+    var shader = gl.createShader(type);
     gl.shaderSource(shader, str);
     gl.compileShader(shader);
 
@@ -56,8 +34,8 @@ function getShader(gl, id) {
 var shaderProgram;
 
 function initShaders() {
-    var fragmentShader = getShader(gl, "shader-fs");
-    var vertexShader = getShader(gl, "shader-vs");
+    var vertexShader = compileShader(RESOURCES.snakeVS.data, gl.VERTEX_SHADER);
+    var fragmentShader = compileShader(RESOURCES.snakeFS.data, gl.FRAGMENT_SHADER);
 
     shaderProgram = gl.createProgram();
     gl.attachShader(shaderProgram, vertexShader);

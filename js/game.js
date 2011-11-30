@@ -7,6 +7,10 @@ var snake;
 var lastFrame = Date.now();
 
 function startGame() {
+    loadResources(startWorld);
+}
+
+function startWorld() {
     webGLStart();
     addKeyListeners();
     snake = new Snake();
