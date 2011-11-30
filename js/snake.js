@@ -25,7 +25,8 @@ function Snake(world) {
     this.headY = y;
     this.dir = Math.atan2(y-py, x-px);
     this.dist = 0;
-    this.replicas = [];
+    // replicas[0] is a janitor - the snake itself
+    this.replicas = [{deltaX: 0, deltaY: 0}];
 }
 
 Snake.prototype = {
@@ -41,12 +42,12 @@ Snake.prototype = {
         this.dist += this.v * dt;
         this.spine.shift();
         this.spine.push([this.headX, this.headY]);
-        this.updateReplicas();
+        this.removeOldReplicas();
         this.wrapWorld();
     },
-    updateReplicas: function() {
+    removeOldReplicas: function() {
         var maxAge = this.spine.length + this.headLength / (this.v * dt);
-        for (var i = this.replicas.length - 1; i >= 0; i--){
+        for (var i = this.replicas.length - 1; i >= 1; i--){
             if (this.replicas[i].age++ > maxAge) {
                 this.replicas.splice(i, 1);
             }
@@ -70,7 +71,7 @@ Snake.prototype = {
             this.spine[i][0] += deltaX;
             this.spine[i][1] += deltaY;
         }
-        for (var i=0; i < this.replicas.length; i++) {
+        for (var i=1; i < this.replicas.length; i++) {
             this.replicas[i].deltaX += deltaX;
             this.replicas[i].deltaY += deltaY;
         }
@@ -149,8 +150,6 @@ Snake.prototype = {
     },
     draw: function() {
         this.prepareBuffers();
-        this.drawBuffers();
-        // draw replicas
         var replicaMv = mat4.create();
         var r = this.replicas;
         for (var i=0; i < r.length; i++) {
