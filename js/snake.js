@@ -5,6 +5,7 @@ var SNAKE_WIDTH = 0.25;
 var dt = 0.01;
 
 var HEAD_SHAPE = [1, 1.1, 1.3, 1.25, 1.14, 1.12, 1.1, 0.8, 0.67, 0.4];
+var HEAD_LENGTH = 0.85;
 
 function Snake(world) {
     this.vertPosBuf = gl.createBuffer();
@@ -47,7 +48,7 @@ Snake.prototype = {
         this.wrapWorld();
     },
     removeOldReplicas: function() {
-        var maxAge = this.spine.length + this.headLength / (this.v * dt);
+        var maxAge = this.spine.length + HEAD_LENGTH / (this.v * dt);
         for (var i = this.replicas.length - 1; i >= 1; i--){
             if (this.replicas[i].age++ > maxAge) {
                 this.replicas.splice(i, 1);
@@ -57,8 +58,8 @@ Snake.prototype = {
     wrapWorld: function() {
         var deltaX = WORLD.right - WORLD.left;
         var deltaY = WORLD.top - WORLD.bottom;
-        var tipX = this.headX + Math.cos(this.getDir()) * this.headLength;
-        var tipY = this.headY + Math.sin(this.getDir()) * this.headLength;
+        var tipX = this.headX + Math.cos(this.getDir()) * HEAD_LENGTH;
+        var tipY = this.headY + Math.sin(this.getDir()) * HEAD_LENGTH;
         if(tipX > WORLD.right)  this.jump(-deltaX, 0);
         if(tipX < WORLD.left)   this.jump(deltaX, 0);
         if(tipY > WORLD.top)    this.jump(0, -deltaY);
@@ -121,8 +122,8 @@ Snake.prototype = {
                              currY = this.spine[r][1],
                              i < TAIL_CRV*Math.PI/2 ? Math.sin(i/TAIL_CRV) : 1);
         };
-        var dx = Math.cos(this.getDir()) * this.headLength / HEAD_SHAPE.length;
-        var dy = Math.sin(this.getDir()) * this.headLength / HEAD_SHAPE.length;
+        var dx = Math.cos(this.getDir()) * HEAD_LENGTH / HEAD_SHAPE.length;
+        var dy = Math.sin(this.getDir()) * HEAD_LENGTH / HEAD_SHAPE.length;
         for (var h=0; h < HEAD_SHAPE.length; h++) {
             prevX = currX; prevY = currY;
             currX += dx; currY += dy;
