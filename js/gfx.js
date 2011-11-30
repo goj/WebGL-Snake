@@ -84,18 +84,13 @@ var SNAKE_TEXTURE;
 
 function initTextures() {
     SNAKE_TEXTURE = gl.createTexture();
-    SNAKE_TEXTURE.image = new Image();
-    SNAKE_TEXTURE.image.onload = function() {
-        handleLoadedTexture(SNAKE_TEXTURE);
-    };
-    SNAKE_TEXTURE.image.crossOrigin = "anonymous";
-    SNAKE_TEXTURE.image.src = "img/snake.png";
+    setTextureImage(SNAKE_TEXTURE, RESOURCES.snakeSkinTex.image);
 }
 
-function handleLoadedTexture(texture) {
+function setTextureImage(texture, image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.bindTexture(gl.TEXTURE_2D, null);
@@ -104,8 +99,6 @@ function handleLoadedTexture(texture) {
 function webGLStart() {
     var canvas = document.getElementById("game-canvas");
     initGL(canvas);
-    initShaders();
-    initTextures();
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.disable(gl.DEPTH_TEST);

@@ -2,17 +2,19 @@ var KEY_LEFT = false;
 var KEY_RIGHT = false;
 var PAUSE = false;
 
-var UPS = 60 / 1000; // do 40 updates per second
+var UPS = 60 / 1000; // do 60 updates per second
 var snake;
 var lastFrame = Date.now();
 
 function startGame() {
+    webGLStart();
+    addKeyListeners();
     loadResources(startWorld);
 }
 
 function startWorld() {
-    webGLStart();
-    addKeyListeners();
+    initShaders();
+    initTextures();
     snake = new Snake();
     tick();
 }
