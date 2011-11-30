@@ -1,5 +1,6 @@
 var INITIAL_SPINE_LEN = 200;
 var RIB_DIST = 10;
+var TAIL_CRV = 100/RIB_DIST; // tail curvature
 var SNAKE_WIDTH = 0.25;
 var dt = 0.01;
 
@@ -100,7 +101,7 @@ Snake.prototype = {
          return i;
      },
     prepareBuffers: function() {
-        var ribsNo = Math.floor(this.spine.length / RIB_DIST);
+        var ribsNo = Math.floor(this.spine.length / RIB_DIST) + HEAD_SHAPE.length;
         this.indices = realloc(this.indices, Uint16Array, 2*ribsNo);
         this.contour = realloc(this.contour, Float32Array, 4*ribsNo);
         this.texpos = realloc(this.texpos, Float32Array, 4*ribsNo);
@@ -118,7 +119,7 @@ Snake.prototype = {
             i = this.appendRib(i, prevX, prevY,
                              currX = this.spine[r][0],
                              currY = this.spine[r][1],
-                             i < 15 ? Math.sin(0.1 * i) : 1);
+                             i < TAIL_CRV*Math.PI/2 ? Math.sin(i/TAIL_CRV) : 1);
         };
         var dx = Math.cos(this.getDir()) * this.headLength / HEAD_SHAPE.length;
         var dy = Math.sin(this.getDir()) * this.headLength / HEAD_SHAPE.length;
