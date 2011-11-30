@@ -25,10 +25,12 @@ function Snake(world) {
     this.headY = y;
     this.dir = Math.atan2(y-py, x-px);
     this.dist = 0;
+    this.replicas = [];
 }
 
 Snake.prototype = {
     v: 2.5, // velocity
+    headLength: 0.85,
     agility: 3,
     turnLeft:  function() { this.dir += this.agility * dt; },
     turnRight: function() { this.dir -= this.agility * dt; },
@@ -39,6 +41,42 @@ Snake.prototype = {
         this.dist += this.v * dt;
         this.spine.shift();
         this.spine.push([this.headX, this.headY]);
+        this.updateReplicas();
+        this.wrapWorld();
+    },
+    updateReplicas: function() {
+        var maxAge = this.spine.length + this.headLength / (this.v * dt);
+        for (var i = this.replicas.length - 1; i >= 0; i--){
+            if (this.replicas[i].age++ > maxAge) {
+                this.replicas.splice(i, 1);
+            }
+        };
+    },
+    wrapWorld: function() {
+        var deltaX = WORLD.right - WORLD.left;
+        var deltaY = WORLD.top - WORLD.bottom;
+        var tipX = this.headX + Math.cos(this.getDir()) * this.headLength;
+        var tipY = this.headY + Math.sin(this.getDir()) * this.headLength;
+        if(tipX > WORLD.right)  this.jump(-deltaX, 0);
+        if(tipX < WORLD.left)   this.jump(deltaX, 0);
+        if(tipY > WORLD.top)    this.jump(0, -deltaY);
+        if(tipY < WORLD.bottom) this.jump(0, deltaY);
+
+    },
+    jump: function(deltaX, deltaY) {
+        this.headX += deltaX;
+        this.headY += deltaY;
+        for (var i=0; i < this.spine.length; i++) {
+            this.spine[i][0] += deltaX;
+            this.spine[i][1] += deltaY;
+        }
+        for (var i=0; i < this.replicas.length; i++) {
+            this.replicas[i].deltaX += deltaX;
+            this.replicas[i].deltaY += deltaY;
+        }
+        this.replicas.push({age: 0,
+                            deltaX: -deltaX,
+                            deltaY: -deltaY});
     },
     appendRib: function(i, prevX, prevY, currX, currY, width) {
          width *= SNAKE_WIDTH;
@@ -81,8 +119,8 @@ Snake.prototype = {
                              currY = this.spine[r][1],
                              i < 15 ? Math.sin(0.1 * i) : 1);
         };
-        var dx = Math.cos(this.getDir()) * this.v / HEAD_SHAPE.length / 3;
-        var dy = Math.sin(this.getDir()) * this.v / HEAD_SHAPE.length / 3;
+        var dx = Math.cos(this.getDir()) * this.headLength / HEAD_SHAPE.length;
+        var dy = Math.sin(this.getDir()) * this.headLength / HEAD_SHAPE.length;
         for (var h=0; h < HEAD_SHAPE.length; h++) {
             prevX = currX; prevY = currY;
             currX += dx; currY += dy;
@@ -112,5 +150,14 @@ Snake.prototype = {
     draw: function() {
         this.prepareBuffers();
         this.drawBuffers();
+        // draw replicas
+        var replicaMv = mat4.create();
+        var r = this.replicas;
+        for (var i=0; i < r.length; i++) {
+            mat4.translate(mvMatrix, [r[i].deltaX, r[i].deltaY, 0], replicaMv);
+            gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, replicaMv);
+            this.drawBuffers();
+        };
+        gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
     }
 }

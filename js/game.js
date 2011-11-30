@@ -32,7 +32,6 @@ function tick() {
     }
 
     clearScene();
-    mat4.scale(mvMatrix, [0.5, 0.5, 1.0]);
     setMatrixUniforms();
 
     snake.draw();

@@ -1,4 +1,10 @@
 var gl;
+var WORLD = {
+    left:   -6,
+    right:   6,
+    bottom: -6,
+    top:     6,
+};
 
 function initGL(canvas) {
     try {
@@ -85,9 +91,12 @@ function setMatrixUniforms() {
 
 function clearScene() {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT);
 
-    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+    mat4.ortho(WORLD.left, WORLD.right,
+               WORLD.bottom, WORLD.top,
+               0.1, 100.0,
+               pMatrix);
 
     mat4.identity(mvMatrix);
     mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
